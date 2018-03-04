@@ -1,0 +1,53 @@
+build
+.DS_Store
+Tests/output/*.pdf
+binding
+node_modules
+aws.json
+etc
+
+#all the binaries
+# Compiled source #
+###################
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+*.lib
+*.pdb
+*.ilk
+BuildLog.htm
+*.obj
+*.idb
+
+_.swp
+
+#Visual Studio unwanted#
+########################
+*.user
+*.ncb
+*.suo
+*.pch
+*.dep
+*.manifest
+*.manifest.res
+*.sdf
+*.log
+*.tlog
+*.lastbuildstate
+*.ipch
+*.rc
+*.opensdf
+*.cache
+*.sln
+*.vcxproj*
+
+#XCode unwanted#
+################
+xcode/Build
+xcode/DerivedData
+
+#Visual code unwanted
+.vscode
