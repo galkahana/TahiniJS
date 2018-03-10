@@ -1,8 +1,8 @@
 const PDFWStreamForFile = require('./IO/PDFWStreamForFile')
 const ObjectsContext = require('./Objects/ObjectsContext')
-const  {stringToUTF8} = require('./Objects/utf8')
+const  {stringToCodes} = require('./Objects/stringUtils')
 
-const HEADER_BYTES = stringToUTF8('%').concat([0xBD,0xBE,0xBC],stringToUTF8('\r\n'))
+const HEADER_BYTES = stringToCodes('%\xBD\xBE\xBC\r\n')
 
 class Writer {
     constructor() {
@@ -10,7 +10,7 @@ class Writer {
         this.objectsContext = null
     }
 
-    start(inFilename,inPDFVersion="1.4") {
+    start(inFilename,inPDFVersion='1.4') {
         this.outputStream  = new PDFWStreamForFile(inFilename)
         this.objectsContext = new ObjectsContext(this.outputStream)
 
@@ -26,10 +26,37 @@ class Writer {
         this.objectsContext.endFreeContext()
     }
 
+    _writeCatalogObject(pageTreeRoot) {
+        const catalogId = this.objectsContext.startNewIndirectObject()
+        this.trailerInformation.setRoot(catalogId)
+
+        const catalogContext = this.objectsContext.startNewDictionary()
+
+        catalogContext.writeKey('Type')
+        catalogContext.writeNameValue('Catalog')
+
+        if(pageTreeRoot) {
+            catalogContext.writeKey('Pages')
+            catalogContext.writeObjectReferenceValue(pageTreeRoot)
+        }
+
+        this.objectsContext.endDictionary(catalogContext)
+        this.objectsContext.endIndirectObject()
+    }
+
+    _writeCatalogObjectOfNewPDF() {
+        this._writeCatalogObject(null)
+    }
+
     _finalizeNewPDF() {
         /*_writeUsedFontsDefinitions();
         _writePagesTree();
-        _writeCatalogObjectOfNewPDF();
+        */
+
+        this._writeCatalogObjectOfNewPDF()
+
+
+        /*
         _writeInfoDictionary();
         xrefTablePosition = this.objectsContext.writeXrefTable()
         _writeTrailerDictionary();

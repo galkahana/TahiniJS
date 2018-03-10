@@ -1,4 +1,4 @@
-var tahini = require('../Tahini');
+var tahini = require('../index');
 
 describe('EmptyWriter', function() {
 	it('should complete without error', function() {
