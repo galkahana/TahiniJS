@@ -30,7 +30,7 @@ class Writer {
         const catalogId = this.objectsContext.startNewIndirectObject()
         this.trailerInformation.setRoot(catalogId)
 
-        const catalogContext = this.objectsContext.startNewDictionary()
+        const catalogContext = this.objectsContext.startDictionary()
 
         catalogContext.writeKey('Type')
         catalogContext.writeNameValue('Catalog')

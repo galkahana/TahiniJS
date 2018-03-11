@@ -1,6 +1,7 @@
 const  {stringToCodes} = require('./stringUtils')
-const PrimitiveWriter = require('./PrimitiveWriter')
+const {PrimitiveWriter} = require('./PrimitiveWriter')
 const IndirectObjectsReferenceRegistry = require('./IndirectObjectsReferenceRegistry')
+const DictionaryContext = require('./DictionaryContext')
 
 const PERCENT = stringToCodes('%')
 
@@ -9,6 +10,7 @@ class ObjectsContext {
         this.outputStream = outputStream
         this.primitiveWriter = new PrimitiveWriter(this.outputStream)
         this.referencesRegistry = new IndirectObjectsReferenceRegistry()
+        this.dictionaries = []
     }
 
     startFreeContext() {
@@ -27,6 +29,17 @@ class ObjectsContext {
         return newObjectId
     }
 
+    endIndirectObject() {
+        this.primitiveWriter.writeKeyword('endobj')
+    }
+
+    startDictionary() {
+        const newDictionary = new DictionaryContext(this,this.dictionaries.length)
+        this.dictionaries.push(newDictionary)
+
+        newDictionary.writeDictStart()    
+        return newDictionary
+    }
 
     endLine() {
         this.primitiveWriter.endLine()
@@ -37,6 +50,11 @@ class ObjectsContext {
         this.outputStream.write(PERCENT)
         this.outputStream.write(stringToCodes(comment))
         this.endLine()
+        return this
+    }
+
+    writeName(name, seperator) {
+        this.primitiveWriter.writeName(name, seperator)
         return this
     }
     
