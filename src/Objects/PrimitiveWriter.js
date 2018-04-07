@@ -15,6 +15,7 @@ const OPEN_BRACKET = stringToCodes('[')
 const CLOSE_BRACKET = stringToCodes(']')
 const LEFT_ANGLE_BRACKET = stringToCodes('<')
 const RIGHT_ANGLE_BRACKET = stringToCodes('>')
+const NULL = stringToCodes('null')
 
 class PrimitiveWriter {
 
@@ -91,8 +92,14 @@ class PrimitiveWriter {
         return this
     }
 
-    writeBoolean(boolean, seperator=SPACE) {
-        this.outputStream.write(boolean ? TRUE:FALSE)
+    writeBoolean(value, seperator=SPACE) {
+        this.outputStream.write(value ? TRUE:FALSE)
+        this.outputStream.write(seperator)
+        return this
+    }
+
+    writeNull(seperator=SPACE) {
+        this.outputStream.write(NULL)
         this.outputStream.write(seperator)
         return this
     }

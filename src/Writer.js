@@ -1,6 +1,8 @@
 const PDFWStreamForFile = require('./IO/PDFWStreamForFile')
 const ObjectsContext = require('./Objects/ObjectsContext')
+const TrailerInformation = require('./Objects/TrailerInformation')
 const  {stringToCodes} = require('./Objects/stringUtils')
+const ObjectReference = require('./Objects/ObjectReference')
 
 const HEADER_BYTES = stringToCodes('%\xBD\xBE\xBC\r\n')
 
@@ -8,11 +10,13 @@ class Writer {
     constructor() {
         this.outputStream = null
         this.objectsContext = null
+        this.trailerInformation = null
     }
 
     start(inFilename,inPDFVersion='1.4') {
         this.outputStream  = new PDFWStreamForFile(inFilename)
         this.objectsContext = new ObjectsContext(this.outputStream)
+        this.trailerInformation = new TrailerInformation()
 
         this._writeHeader(inPDFVersion)
         return this
@@ -28,7 +32,7 @@ class Writer {
 
     _writeCatalogObject(pageTreeRoot) {
         const catalogId = this.objectsContext.startNewIndirectObject()
-        this.trailerInformation.setRoot(catalogId)
+        this.trailerInformation.rootReference = new ObjectReference(catalogId)
 
         const catalogContext = this.objectsContext.startDictionary()
 
@@ -48,16 +52,20 @@ class Writer {
         this._writeCatalogObject(null)
     }
 
+    _writeInfoDictionary() {
+        
+    }    
+
     _finalizeNewPDF() {
         /*_writeUsedFontsDefinitions();
         _writePagesTree();
         */
 
         this._writeCatalogObjectOfNewPDF()
+        this._writeInfoDictionary()
 
 
         /*
-        _writeInfoDictionary();
         xrefTablePosition = this.objectsContext.writeXrefTable()
         _writeTrailerDictionary();
         _writeXrefReference(xrefTablePosition);
